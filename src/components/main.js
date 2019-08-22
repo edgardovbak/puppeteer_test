@@ -1,11 +1,23 @@
 import React, { Component } from 'react'
 
 export default class Main extends Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        name: "edy"
+      }
+  }
+
+  getName = (number) => {
+    const name = number + this.state.name;
+    return name
+  } 
+
   render() {
     return (
       <div>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          {this.getName(400)}
         </p>
         <form action="">
           <fieldset>
