@@ -1,0 +1,29 @@
+{
+  "name": "pupetter",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "puppeteer": "^1.19.0",
+    "puppeteer-core": "^1.19.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-scripts": "0.9.5"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^24.9.0",
+    "babel-preset-env": "^1.7.0",
+    "faker": "^4.1.0",
+    "jest": "^24.9.0",
+    "puppeteer": "^1.19.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "jest",
+    "eject": "react-scripts eject",
+    "testj": "jest"
+  }
+}
