@@ -33,6 +33,44 @@ describe('Screenshot', () => {
   });
 });
 
+// start testing
+describe("Contact form", () => {
+  test("lead can submit a contact request", async () => {
+    await page.goto(APP);
+    await page.waitForSelector("form");
+    await page.click("input[name=name]");
+    await page.type("input[name=name]", lead.name);
+    await page.click("input[name=email]");
+    await page.type("input[name=email]", lead.email);
+  }, 16000);
+});
+
+describe("CSS & JS coverage", () => {
+  test("canonical must be present", async () => {
+    // Enable both JavaScript and CSS coverage
+    await Promise.all([
+      page.coverage.startJSCoverage(),
+      page.coverage.startCSSCoverage()
+    ]);
+    // Navigate to page
+    await page.goto(APP);
+    // Disable both JavaScript and CSS coverage
+    const [jsCoverage, cssCoverage] = await Promise.all([
+      page.coverage.stopJSCoverage(),
+      page.coverage.stopCSSCoverage(),
+    ]);
+    let totalBytes = 0;
+    let usedBytes = 0;
+    const coverage = [...jsCoverage, ...cssCoverage];
+    for (const entry of coverage) {
+      totalBytes += entry.text.length;
+      for (const range of entry.ranges)
+        usedBytes += range.end - range.start - 1;
+    }
+    console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
+  });
+});
+
 // browser actions 
 describe('browser Events', () => {
 
@@ -51,7 +89,6 @@ describe('browser Events', () => {
 
   test('disconnected', async () => {
     let browser2 = await puppeteer.launch();
-    let page2 = await browser2.newPage();
     await browser2.disconnect()
     browser2.on('disconnected', async (target) => {
         console.log("browser event disconnected");
@@ -95,18 +132,27 @@ describe('Page Events', () => {
       console.log("Page event load");
     })
   });
-});
 
-// start testing
-describe("Contact form", () => {
-  test("lead can submit a contact request", async () => {
-    await page.goto(APP);
-    await page.waitForSelector("form");
-    await page.click("input[name=name]");
-    await page.type("input[name=name]", lead.name);
-    await page.click("input[name=email]");
-    await page.type("input[name=email]", lead.email);
-  }, 16000);
+  test('request', async () => {
+    let browser3 = await puppeteer.launch();
+    let page3 = await browser3.newPage();
+    await page3.goto(APP);
+    await page3.setRequestInterception(true);
+    
+    page3.on('request', async (request) => {
+      console.log("Page event request");
+      console.log(request.url(), request.resourceType(), request.method(), JSON.stringify(request.headers()));
+      request.continue();
+    })
+    
+    page3.on('response', async (response) => {
+      console.log("Page event response");
+      console.log(response.url(), response.status(), JSON.stringify(request.headers()));
+      request.continue();
+    })
+    await page3.close();
+    await browser3.close();
+  });
 });
 
 describe("Page headers", () => {
@@ -131,31 +177,6 @@ describe("SEO", () => {
   });
 });
 
-describe("CSS & JS coverage", () => {
-  test("canonical must be present", async () => {
-    // Enable both JavaScript and CSS coverage
-    await Promise.all([
-      page.coverage.startJSCoverage(),
-      page.coverage.startCSSCoverage()
-    ]);
-    // Navigate to page
-    await page.goto(APP);
-    // Disable both JavaScript and CSS coverage
-    const [jsCoverage, cssCoverage] = await Promise.all([
-      page.coverage.stopJSCoverage(),
-      page.coverage.stopCSSCoverage(),
-    ]);
-    let totalBytes = 0;
-    let usedBytes = 0;
-    const coverage = [...jsCoverage, ...cssCoverage];
-    for (const entry of coverage) {
-      totalBytes += entry.text.length;
-      for (const range of entry.ranges)
-        usedBytes += range.end - range.start - 1;
-    }
-    console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
-  });
-});
 // end testing
 
 function sum(a,b) {
