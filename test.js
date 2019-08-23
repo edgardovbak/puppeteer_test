@@ -17,76 +17,146 @@ const height = 1080;
 // before all tests run
 beforeAll(async () => {
   browser = await puppeteer.launch({
-    headless: false,
-    slowMo: 10,
-    args: [`--window-size=${width},${height}`]
+    // headless: false,
+    // slowMo: 10,
+    // args: [`--window-size=${width},${height}`]
   });
   page = await browser.newPage();
   await page.setViewport({ width, height });
 });
 
-// start testing
-describe("Contact form", () => {
-  test("lead can submit a contact request", async () => {
-    await page.goto(APP);
-    await page.waitForSelector("form");
-    await page.click("input[name=name]");
-    await page.type("input[name=name]", lead.name);
-    await page.click("input[name=email]");
-    await page.type("input[name=email]", lead.email);
-  }, 16000);
+// // start testing
+// describe("Contact form", () => {
+//   test("lead can submit a contact request", async () => {
+//     await page.goto(APP);
+//     await page.waitForSelector("form");
+//     await page.click("input[name=name]");
+//     await page.type("input[name=name]", lead.name);
+//     await page.click("input[name=email]");
+//     await page.type("input[name=email]", lead.email);
+//   }, 16000);
+// });
 
-  
-});
+// describe("Page headers", () => {
+//   test("assert that main title contains the correct text", async () => {
+//     const mainTitleText = await page.$eval("title", el => el.textContent);
+//     expect(mainTitleText).toEqual("React App");
+//   });
+// });
 
-describe("Page headers", () => {
-  test("assert that main title contains the correct text", async () => {
-    const mainTitleText = await page.$eval("title", el => el.textContent);
-    expect(mainTitleText).toEqual("React App");
+// describe("Navigation", () => {
+//   test("assert that a div named navbar exists", async () => {
+//     const navbar = await page.$eval("nav", el => (el ? true : false));
+//     expect(navbar).toBe(true);
+//   });
+// });
+
+// describe("SEO", () => {
+//   test("canonical must be present", async () => {
+//     await page.goto(`${APP}`);
+//     const canonical = await page.$eval("link[rel=canonical]", el => el.href);
+//     expect(canonical).toEqual("https://do_something.com/");
+//   });
+// });
+
+// describe("CSS & JS coverage", () => {
+//   test("canonical must be present", async () => {
+//     // Enable both JavaScript and CSS coverage
+//     await Promise.all([
+//       page.coverage.startJSCoverage(),
+//       page.coverage.startCSSCoverage()
+//     ]);
+//     // Navigate to page
+//     await page.goto(APP);
+//     // Disable both JavaScript and CSS coverage
+//     const [jsCoverage, cssCoverage] = await Promise.all([
+//       page.coverage.stopJSCoverage(),
+//       page.coverage.stopCSSCoverage(),
+//     ]);
+//     let totalBytes = 0;
+//     let usedBytes = 0;
+//     const coverage = [...jsCoverage, ...cssCoverage];
+//     for (const entry of coverage) {
+//       totalBytes += entry.text.length;
+//       for (const range of entry.ranges)
+//         usedBytes += range.end - range.start - 1;
+//     }
+//     console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
+//   });
+// });
+// // end testing
+
+function sum(a,b) {
+  return a + b;
+}
+
+// jest test list
+describe("Jest test list", () => {
+  test("Test function return", async () => {
+    expect(sum(3,5)).toBe(8);  // toBe use === 
+  });
+
+  test("Test function return", async () => {
+    expect(sum(3,5)).not.toBe(10);  // toBe use === 
+  });
+
+  let equal = {something: 'Dou'}
+  equal['something2'] = 2;
+  test("Test object euqal", async () => {
+    expect(equal).toEqual({something: 'Dou', something2: 2});  // used for objects
+  });
+
+  test("Test toBeNull", async () => {
+    const empty = null;
+    expect(empty).toBeNull();
+    expect(empty).toBeDefined();
+    expect(empty).not.toBeUndefined();
+    expect(empty).not.toBeTruthy();
+    expect(empty).toBeFalsy();
+  });
+
+  test('zero', () => {
+    const z = 0;
+    expect(z).not.toBeNull();
+    expect(z).toBeDefined();
+    expect(z).not.toBeUndefined();
+    expect(z).not.toBeTruthy();
+    expect(z).toBeFalsy();
+  });
+
+  test('Numbers', () => {
+    const value = 7 + 3;
+    expect(value).toBe(10);
+    expect(value).not.toBe(11);
+    expect(value).toEqual(10);
+    expect(value).toBeGreaterThan(2);
+    expect(value).toBeGreaterThanOrEqual(3.5);
+    expect(value).toBeLessThan(15);
+    expect(value).toBeLessThanOrEqual(14.5);  
+    const realNumber = 0.1 + 0.2;
+    expect(realNumber).not.toBe(0.3);  
+    expect(realNumber).toBeCloseTo(0.3);
+  });
+
+  test('Strings', () => {
+    expect("Some simple string").not.toMatch(/U/);
+    expect("Some simple string").toMatch(/simple/);
+  });
+
+  test('Array', () => {
+    const list = [
+      'test', 'some', 'real', 'array', 'for', 'example'
+    ];
+    expect(list).toContain('for');
+  });
+
+  function someErrorThrow() {
+    throw new ConfigError('Something went wrong');
+  }
+  test('Exceptions', () => {
+    expect(someErrorThrow).toThrow();
   });
 });
-
-describe("Navigation", () => {
-  test("assert that a div named navbar exists", async () => {
-    const navbar = await page.$eval("nav", el => (el ? true : false));
-    expect(navbar).toBe(true);
-  });
-});
-
-describe("SEO", () => {
-  test("canonical must be present", async () => {
-    await page.goto(`${APP}`);
-    const canonical = await page.$eval("link[rel=canonical]", el => el.href);
-    expect(canonical).toEqual("https://do_something.com/");
-  });
-});
-
-describe("CSS & JS coverage", () => {
-  test("canonical must be present", async () => {
-    // Enable both JavaScript and CSS coverage
-    await Promise.all([
-      page.coverage.startJSCoverage(),
-      page.coverage.startCSSCoverage()
-    ]);
-    // Navigate to page
-    await page.goto(APP);
-    // Disable both JavaScript and CSS coverage
-    const [jsCoverage, cssCoverage] = await Promise.all([
-      page.coverage.stopJSCoverage(),
-      page.coverage.stopCSSCoverage(),
-    ]);
-    let totalBytes = 0;
-    let usedBytes = 0;
-    const coverage = [...jsCoverage, ...cssCoverage];
-    for (const entry of coverage) {
-      totalBytes += entry.text.length;
-      for (const range of entry.ranges)
-        usedBytes += range.end - range.start - 1;
-    }
-    console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
-  });
-});
-// end testing
 
 // after all tests are finished
 afterAll( async () => {

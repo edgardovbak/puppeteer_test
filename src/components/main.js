@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import Intro from './intro.js'
+import Posts from './posts.js'
 
 export default class Main extends Component {
   constructor(props) {
@@ -19,6 +21,7 @@ export default class Main extends Component {
         <p className="App-intro">
           {this.getName(400)}
         </p>
+        <Intro msg={this.getName(500)}/>
         <form action="">
           <fieldset>
             <legend>name</legend>
@@ -32,6 +35,7 @@ export default class Main extends Component {
             <button type="submit">Send</button>
           </fieldset>
         </form>
+        <Posts/>
       </div>
     )
   }
