@@ -24,74 +24,146 @@ beforeAll(async () => {
   page = await browser.newPage();
   await page.setViewport({ width, height });
 });
+// Create screenshot
+describe('Screenshot', () => {
+  test('Create screenshot', async () => {
+    await page.goto(APP);
+    await page.screenshot({path: 'app.png'});
+    await page.pdf({path: 'app.pdf', format: 'A4'});
+  });
+});
 
-// // start testing
-// describe("Contact form", () => {
-//   test("lead can submit a contact request", async () => {
-//     await page.goto(APP);
-//     await page.waitForSelector("form");
-//     await page.click("input[name=name]");
-//     await page.type("input[name=name]", lead.name);
-//     await page.click("input[name=email]");
-//     await page.type("input[name=email]", lead.email);
-//   }, 16000);
-// });
+// browser actions 
+describe('browser Events', () => {
 
-// describe("Page headers", () => {
-//   test("assert that main title contains the correct text", async () => {
-//     const mainTitleText = await page.$eval("title", el => el.textContent);
-//     expect(mainTitleText).toEqual("React App");
-//   });
-// });
+  test('targetchanged', async () => {
+    await page.goto(APP);
+    browser.on('targetchanged', async (target) => {
+        console.log("browser event changed");
+    });
+  });
 
-// describe("Navigation", () => {
-//   test("assert that a div named navbar exists", async () => {
-//     const navbar = await page.$eval("nav", el => (el ? true : false));
-//     expect(navbar).toBe(true);
-//   });
-// });
+  test('targetdestroyed', () => {
+    browser.on('targetdestroyed', async (target) => {
+        console.log("browser event  destroyed");
+    });
+  });
 
-// describe("SEO", () => {
-//   test("canonical must be present", async () => {
-//     await page.goto(`${APP}`);
-//     const canonical = await page.$eval("link[rel=canonical]", el => el.href);
-//     expect(canonical).toEqual("https://do_something.com/");
-//   });
-// });
+  test('disconnected', async () => {
+    let browser2 = await puppeteer.launch();
+    let page2 = await browser2.newPage();
+    await browser2.disconnect()
+    browser2.on('disconnected', async (target) => {
+        console.log("browser event disconnected");
+    });
+    await browser2.close();
+  });
 
-// describe("CSS & JS coverage", () => {
-//   test("canonical must be present", async () => {
-//     // Enable both JavaScript and CSS coverage
-//     await Promise.all([
-//       page.coverage.startJSCoverage(),
-//       page.coverage.startCSSCoverage()
-//     ]);
-//     // Navigate to page
-//     await page.goto(APP);
-//     // Disable both JavaScript and CSS coverage
-//     const [jsCoverage, cssCoverage] = await Promise.all([
-//       page.coverage.stopJSCoverage(),
-//       page.coverage.stopCSSCoverage(),
-//     ]);
-//     let totalBytes = 0;
-//     let usedBytes = 0;
-//     const coverage = [...jsCoverage, ...cssCoverage];
-//     for (const entry of coverage) {
-//       totalBytes += entry.text.length;
-//       for (const range of entry.ranges)
-//         usedBytes += range.end - range.start - 1;
-//     }
-//     console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
-//   });
-// });
-// // end testing
+  test('targetcreated', () => {
+    browser.on('targetcreated', async (target) => {
+        console.log("browser event created");
+    });
+  });
+
+  test('Methods', async () => {
+    let n = await browser.browserContexts();
+    // console.log(n);
+    let user = await browser.userAgent();
+    console.log(user);
+  });
+});
+
+// Page
+describe('Page Events', () => {
+  test('close', async () => {
+    let page2 = await browser.newPage();
+    await page2.goto(APP);
+    page2.close();
+    page2.on('close', async => {
+      console.log("Page event close");
+    });
+  });
+
+  test('dom loaded', async () => {
+    page.on('domcontentloaded', async () => {
+      console.log("Page event domcontentloaded");
+    })
+  });
+
+  test('load', async () => {
+    page.on('load', async () => {
+      console.log("Page event load");
+    })
+  });
+});
+
+// start testing
+describe("Contact form", () => {
+  test("lead can submit a contact request", async () => {
+    await page.goto(APP);
+    await page.waitForSelector("form");
+    await page.click("input[name=name]");
+    await page.type("input[name=name]", lead.name);
+    await page.click("input[name=email]");
+    await page.type("input[name=email]", lead.email);
+  }, 16000);
+});
+
+describe("Page headers", () => {
+  test("assert that main title contains the correct text", async () => {
+    const mainTitleText = await page.$eval("title", el => el.textContent);
+    expect(mainTitleText).toEqual("React App");
+  });
+});
+
+describe("Navigation", () => {
+  test("assert that a div named navbar exists", async () => {
+    const navbar = await page.$eval("nav", el => (el ? true : false));
+    expect(navbar).toBe(true);
+  });
+});
+
+describe("SEO", () => {
+  test("canonical must be present", async () => {
+    await page.goto(`${APP}`);
+    const canonical = await page.$eval("link[rel=canonical]", el => el.href);
+    expect(canonical).toEqual("https://do_something.com/");
+  });
+});
+
+describe("CSS & JS coverage", () => {
+  test("canonical must be present", async () => {
+    // Enable both JavaScript and CSS coverage
+    await Promise.all([
+      page.coverage.startJSCoverage(),
+      page.coverage.startCSSCoverage()
+    ]);
+    // Navigate to page
+    await page.goto(APP);
+    // Disable both JavaScript and CSS coverage
+    const [jsCoverage, cssCoverage] = await Promise.all([
+      page.coverage.stopJSCoverage(),
+      page.coverage.stopCSSCoverage(),
+    ]);
+    let totalBytes = 0;
+    let usedBytes = 0;
+    const coverage = [...jsCoverage, ...cssCoverage];
+    for (const entry of coverage) {
+      totalBytes += entry.text.length;
+      for (const range of entry.ranges)
+        usedBytes += range.end - range.start - 1;
+    }
+    console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
+  });
+});
+// end testing
 
 function sum(a,b) {
   return a + b;
 }
 
 // jest test list
-describe("Jest test list", () => {
+describe.skip("Jest test list", () => {
   test("Test function return", async () => {
     expect(sum(3,5)).toBe(8);  // toBe use === 
   });
@@ -155,6 +227,21 @@ describe("Jest test list", () => {
   }
   test('Exceptions', () => {
     expect(someErrorThrow).toThrow();
+  });
+});
+
+describe.skip('Mock', () => {
+  
+  test('.mock', async () => {
+    const mockTest = jest.fn();
+    const a = new mockTest();
+    const b = {};
+    const bound = mockTest.bind(b);
+    bound();
+
+    expect(mockTest.mock.calls.length).toBe(2);
+
+    console.log(mockTest.mock.instances);
   });
 });
 
