@@ -133,6 +133,13 @@ describe('Page Events', () => {
   });
 });
 
+describe("Emulation", () => {
+  test("assert that a div named navbar exists", async () => {
+    const navbar = await page.$eval("nav", el => (el ? true : false));
+    expect(navbar).toBe(true);
+  });
+});
+
 describe("Page headers", () => {
   test("assert that main title contains the correct text", async () => {
     const mainTitleText = await page.$eval("title", el => el.textContent);
