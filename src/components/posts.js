@@ -26,6 +26,10 @@ export default class Posts extends Component {
   render() {
     return (
       <div>
+        <div className="post">
+          <h3>test</h3>
+          <div>test 3</div>
+        </div>
         {this.state.data.map( (item, key ) => 
           <Post title={item.title} body={item.body} key={key}/>
         )}

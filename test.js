@@ -25,7 +25,7 @@ beforeAll(async () => {
   await page.setViewport({ width, height });
 });
 // Create screenshot
-describe('Screenshot', () => {
+describe.skip('Screenshot', () => {
   test('Create screenshot', async () => {
     await page.goto(APP);
     await page.screenshot({path: 'app.png'});
@@ -45,34 +45,15 @@ describe("Contact form", () => {
   }, 16000);
 });
 
-describe("CSS & JS coverage", () => {
-  test("canonical must be present", async () => {
-    // Enable both JavaScript and CSS coverage
-    await Promise.all([
-      page.coverage.startJSCoverage(),
-      page.coverage.startCSSCoverage()
-    ]);
-    // Navigate to page
-    await page.goto(APP);
-    // Disable both JavaScript and CSS coverage
-    const [jsCoverage, cssCoverage] = await Promise.all([
-      page.coverage.stopJSCoverage(),
-      page.coverage.stopCSSCoverage(),
-    ]);
-    let totalBytes = 0;
-    let usedBytes = 0;
-    const coverage = [...jsCoverage, ...cssCoverage];
-    for (const entry of coverage) {
-      totalBytes += entry.text.length;
-      for (const range of entry.ranges)
-        usedBytes += range.end - range.start - 1;
-    }
-    console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
+describe.skip("Accessibility", () => {
+  test("Accessibility tree", async () => {
+    const tree = await page.accessibility.snapshot();
+    console.log(tree);
   });
 });
 
 // browser actions 
-describe('browser Events', () => {
+describe.skip('browser Events', () => {
 
   test('targetchanged', async () => {
     await page.goto(APP);
@@ -106,12 +87,22 @@ describe('browser Events', () => {
     let n = await browser.browserContexts();
     // console.log(n);
     let user = await browser.userAgent();
-    console.log(user);
+    console.log("user = ",user);
   });
 });
 
 // Page
 describe('Page Events', () => {
+  test('request', async () => {
+    await page.setRequestInterception(true);
+
+    page.on('request', async (request) => {
+      console.log("Page event request");
+      console.log(request.url(), request.resourceType(), request.method(), JSON.stringify(request.headers()));
+      request.continue();
+    });
+  });
+
   test('close', async () => {
     let page2 = await browser.newPage();
     await page2.goto(APP);
@@ -122,6 +113,7 @@ describe('Page Events', () => {
   });
 
   test('dom loaded', async () => {
+    await page.goto(APP);
     page.on('domcontentloaded', async () => {
       console.log("Page event domcontentloaded");
     })
@@ -133,25 +125,11 @@ describe('Page Events', () => {
     })
   });
 
-  test('request', async () => {
-    let browser3 = await puppeteer.launch();
-    let page3 = await browser3.newPage();
-    await page3.goto(APP);
-    await page3.setRequestInterception(true);
-    
-    page3.on('request', async (request) => {
-      console.log("Page event request");
-      console.log(request.url(), request.resourceType(), request.method(), JSON.stringify(request.headers()));
-      request.continue();
-    })
-    
-    page3.on('response', async (response) => {
+  test('response', async () => {
+    page.on('response', async (response) => {
       console.log("Page event response");
-      console.log(response.url(), response.status(), JSON.stringify(request.headers()));
-      request.continue();
-    })
-    await page3.close();
-    await browser3.close();
+      console.log(response.url(), response.status(), JSON.stringify(response.headers()));
+    });
   });
 });
 
@@ -171,9 +149,24 @@ describe("Navigation", () => {
 
 describe("SEO", () => {
   test("canonical must be present", async () => {
-    await page.goto(`${APP}`);
-    const canonical = await page.$eval("link[rel=canonical]", el => el.href);
-    expect(canonical).toEqual("https://do_something.com/");
+      const canonical = await page.$eval("link[rel=canonical]", el => el.href);
+      expect(canonical).toEqual("https://do_something.com/");
+  });
+});
+
+describe("Page selectors", () => {
+  test("Page selectors", async () => {
+    // await page.goto(APP);
+    const selector = "h1";
+    await page.waitForSelector(selector); 
+    let tagInfo = await page.$eval(selector, el => el.innerHTML );
+    console.log(tagInfo);
+
+    const selectors = ".post h3";
+    const selectorsHandle = await page.$(selectors);
+    // await page.waitForSelector(selectors, { timeout: 10000 }); 
+    let postTitle = await page.$$eval(selectors, el => el.map(item => item.textContent));
+    console.log(postTitle);
   });
 });
 
