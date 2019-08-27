@@ -27,16 +27,16 @@ beforeAll(async () => {
   await page.setViewport({ width, height });
 });
 // Create screenshot
-describe.skip('Screenshot', () => {
+describe('Screenshot', () => {
   test('Create screenshot', async () => {
     await page.goto(APP);
     await page.screenshot({path: 'app.png'});
-    await page.pdf({path: 'app.pdf', format: 'A4'});
+    // await page.pdf({path: 'app.pdf', format: 'A4'});
   });
 });
 
 // start testing
-describe.skip("Contact form", () => {
+describe("Contact form", () => {
   test("lead can submit a contact request", async () => {
     await page.goto(APP);
     await page.waitForSelector("form");
@@ -47,7 +47,7 @@ describe.skip("Contact form", () => {
   }, 16000);
 });
 
-describe.skip("Accessibility", () => {
+describe("Accessibility", () => {
   test("Accessibility tree", async () => {
     const tree = await page.accessibility.snapshot();
     console.log(tree);
@@ -94,7 +94,7 @@ describe.skip('browser Events', () => {
 });
 
 // Page
-describe.skip('Page Events', () => {
+describe('Page Events', () => {
   test('request', async () => {
     await page.setRequestInterception(true);
 
