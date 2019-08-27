@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 const faker =  require("faker");
+const devices = require('puppeteer/DeviceDescriptors');
+const iPhone = devices['iPhone 6'];
 
 const APP = "http://localhost:3000/";
 
@@ -34,7 +36,7 @@ describe.skip('Screenshot', () => {
 });
 
 // start testing
-describe("Contact form", () => {
+describe.skip("Contact form", () => {
   test("lead can submit a contact request", async () => {
     await page.goto(APP);
     await page.waitForSelector("form");
@@ -92,7 +94,7 @@ describe.skip('browser Events', () => {
 });
 
 // Page
-describe('Page Events', () => {
+describe.skip('Page Events', () => {
   test('request', async () => {
     await page.setRequestInterception(true);
 
@@ -134,34 +136,39 @@ describe('Page Events', () => {
 });
 
 describe("Emulation", () => {
-  test("assert that a div named navbar exists", async () => {
-    const navbar = await page.$eval("nav", el => (el ? true : false));
-    expect(navbar).toBe(true);
+  test("Mobile Device Emulation", async () => {
+    const browser2 = await puppeteer.launch();
+    const page2 = await browser2.newPage();
+    await page2.emulate(iPhone);
+    await page2.goto(APP);
+    await page2.screenshot({ path: 'iphone.png', fullPage: true});
+    await page2.close();
+    await browser2.close();
   });
 });
 
-describe("Page headers", () => {
+describe.skip("Page headers", () => {
   test("assert that main title contains the correct text", async () => {
     const mainTitleText = await page.$eval("title", el => el.textContent);
     expect(mainTitleText).toEqual("React App");
   });
 });
 
-describe("Navigation", () => {
+describe.skip("Navigation", () => {
   test("assert that a div named navbar exists", async () => {
     const navbar = await page.$eval("nav", el => (el ? true : false));
     expect(navbar).toBe(true);
   });
 });
 
-describe("SEO", () => {
+describe.skip("SEO", () => {
   test("canonical must be present", async () => {
       const canonical = await page.$eval("link[rel=canonical]", el => el.href);
       expect(canonical).toEqual("https://do_something.com/");
   });
 });
 
-describe("Page selectors", () => {
+describe.skip("Page selectors", () => {
   test("Page selectors", async () => {
     // await page.goto(APP);
     const selector = "h1";
@@ -171,7 +178,6 @@ describe("Page selectors", () => {
 
     const selectors = ".post h3";
     const selectorsHandle = await page.$(selectors);
-    // await page.waitForSelector(selectors, { timeout: 10000 }); 
     let postTitle = await page.$$eval(selectors, el => el.map(item => item.textContent));
     console.log(postTitle);
   });
