@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "chroma-js": "^2.0.4",
+    "geojson-world-map": "0.0.2",
     "puppeteer": "^1.19.0",
     "puppeteer-core": "^1.19.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "world-map-geojson": "^1.0.2"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.5.5",
