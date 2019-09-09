@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-// import Intro from './intro.js'
+import Intro from './intro.js'
 import Posts from './posts.js'
-import Map2 from './map.js'
 
 export default class Main extends Component {
   constructor(props) {
@@ -23,8 +22,7 @@ export default class Main extends Component {
           {this.getName(400)}
         </p>
         <div>
-          {/* <Intro msg={this.getName(500)}/> */}
-          <Map2 />
+          <Intro msg={this.getName(500)}/>
         </div>
         <form action="">
           <fieldset>
